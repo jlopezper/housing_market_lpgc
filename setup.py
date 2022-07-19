@@ -14,7 +14,7 @@ def read(filename):
 
 
 setup(
-    name="housing_market_lpgc",
+    name="housingmarketlpgc",
     version="0.1.0",
     url="https://github.com/jlopezper/housing_market_lpgc",
     license='MIT',

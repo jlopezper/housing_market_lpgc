@@ -1,0 +1,1 @@
+from housing_market_lpgc.hous import get_email_details
