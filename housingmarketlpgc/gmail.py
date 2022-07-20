@@ -6,6 +6,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from bs4 import BeautifulSoup
 
 
 # If modifying these scopes, delete the file token.json.
@@ -42,15 +43,17 @@ def gmail_authenticate():
     return service
 
 # get the Gmail API service
-service = gmail_authenticate()
+# service = gmail_authenticate()
 
 
 
 
-def list_messages(service, user_id, query=''):
+def list_messages(service, user_id, label, query=''):
     try:
+        all_labels = service.users().labels().list(userId='me').execute()['labels']
+        label_id = ''.join([d['id'] for d in all_labels if d['name'] in label])
         response = service.users().messages().list(userId=user_id,
-                q=query).execute()
+                q=query, labelIds=label_id).execute()
         messages = []
         if 'messages' in response:
             messages.extend(response['messages'])
@@ -67,9 +70,10 @@ def list_messages(service, user_id, query=''):
         print('An error occurred: %s' % error)
 
 
-id = '17a9d7494bdee5fe'
+#id = '17a9d7494bdee5fe'
 
-def get_email_details(msg_id):
+def get_email_details(service, msg_id):
+    # service = gmail_authenticate()
     txt = service.users().messages().get(userId='me', id=msg_id).execute()
     
     # Get value of 'payload' from dictionary 'txt'
@@ -89,6 +93,7 @@ def get_email_details(msg_id):
     data = parts['parts'][0]['body']['data']
     data = data.replace("-","+").replace("_","/")
     decoded_data = base64.b64decode(data).decode("utf-8")
+    decoded_data = BeautifulSoup(decoded_data , "lxml")
 
     email_dict = {'subject': subject,
                   'sender': sender,
