@@ -38,6 +38,9 @@ nosetests.xml
 # Private
 token.json
 credentials.json
+log
+data
 
 # vscode
 .vscode
+
